@@ -4,11 +4,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { v4 as uuid } from 'uuid';
 
 @Entity('users')
 class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  readonly id: string;
 
   @Column({ type: 'text' })
   name: string;
@@ -17,7 +18,13 @@ class User {
   email: string;
 
   @CreateDateColumn()
-  created_at: Date;
+  createdAt: Date;
+
+  constructor() {
+    if (!this.id) {
+      this.id = uuid();
+    }
+  }
 }
 
 export { User };
