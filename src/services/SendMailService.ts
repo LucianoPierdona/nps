@@ -1,4 +1,7 @@
 import nodemailer, { Transporter } from 'nodemailer';
+import path from 'path';
+import handlebars from 'handlebars';
+import fs from 'fs';
 
 class SendMailService {
   private client: Transporter;
@@ -22,11 +25,29 @@ class SendMailService {
   }
 
   async sendMail(to: string, subject: string, body: string) {
+    const npsPath = path.resolve(
+      __dirname,
+      '..',
+      'views',
+      'emails',
+      'npsMail.hbs'
+    );
+
+    const templateFileContent = fs.readFileSync(npsPath).toString('utf-8');
+
+    const mailTemplateParse = handlebars.compile(templateFileContent);
+
+    const html = mailTemplateParse({
+      name: to,
+      title: subject,
+      description: body,
+    });
+
     const message = await this.client.sendMail({
       from: 'NPS <noreply@piersgroup.com>', // sender address
       to, // list of receivers
       subject, // Subject line
-      html: body, // html body
+      html, // html body
     });
 
     console.log('Message sent', message.messageId);
