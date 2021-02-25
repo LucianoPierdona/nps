@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { getCustomRepository } from 'typeorm';
-import { SurveyUser } from '../models/SurveyUser';
 import { SurveysRepository } from '../repositories/surveysRepository';
 import { SurveysUsersRepository } from '../repositories/surveysUsersRepository';
 import { UsersRepository } from '../repositories/usersRepository';
+import SendMailService from '../services/SendMailService';
 
 class SendMailController {
   async sendMail(req: Request, res: Response) {
@@ -33,6 +33,12 @@ class SendMailController {
     });
 
     await surveysUsersRepository.save(surveyUser);
+
+    await SendMailService.sendMail(
+      user.email,
+      survey.title,
+      survey.description
+    );
 
     return res.status(200).json(surveyUser);
   }
