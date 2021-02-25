@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
-@Entity('surveys')
+@Entity('surveys_users')
 class SurveyUser {
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
