@@ -4,6 +4,7 @@ import { SurveysRepository } from '../repositories/surveysRepository';
 import { SurveysUsersRepository } from '../repositories/surveysUsersRepository';
 import { UsersRepository } from '../repositories/usersRepository';
 import SendMailService from '../services/SendMailService';
+import { resolve } from 'path';
 
 class SendMailController {
   async sendMail(req: Request, res: Response) {
@@ -27,6 +28,28 @@ class SendMailController {
       return res.status(400).json({ error: "This survey doesn't exist" });
     }
 
+    const npsPath = resolve(__dirname, '..', 'views', 'emails', 'npsMail.hbs');
+
+    const variables = {
+      name: user.email,
+      title: survey.title,
+      description: survey.description,
+      userId: user.id,
+      link: process.env.MAIL_URL,
+    };
+
+    const surveyUserAlreadyExist = await surveysUsersRepository.findOne({
+      where: {
+        userId: user.id,
+        value: null,
+      },
+    });
+
+    if (surveyUserAlreadyExist) {
+      await SendMailService.sendMail(email, survey.title, variables, npsPath);
+      return res.json(surveyUserAlreadyExist);
+    }
+
     const surveyUser = surveysUsersRepository.create({
       userId: user.id,
       surveyId: survey.id,
@@ -37,7 +60,8 @@ class SendMailController {
     await SendMailService.sendMail(
       user.email,
       survey.title,
-      survey.description
+      variables,
+      npsPath
     );
 
     return res.status(200).json(surveyUser);
