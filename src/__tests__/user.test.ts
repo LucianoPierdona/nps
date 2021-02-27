@@ -14,6 +14,7 @@ describe('Users', () => {
 
   afterAll(async () => {
     await connection.dropDatabase();
+    await connection.close();
   });
 
   it('create a new user', async () => {
