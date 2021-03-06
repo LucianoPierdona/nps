@@ -2,7 +2,9 @@
 
 Application made at the fourth edition of next level week
 
-## Sobre o Projeto
+## About the Project
+
+This is a project to calculate the NPS and send emails to customers.
 
 ### 🛠 Tecnologias
 
